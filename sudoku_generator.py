@@ -58,8 +58,13 @@ class SudokuGenerator:
 	Return: None
     '''
     def print_board(self):
-        pass
-
+        for i in range(self.row_length):
+            for j in range(self.row_length):
+                if self.board[i][j]==0:
+                    print('-',end=' ')
+                else:
+                    print(self.board[i][j],end=' ')
+            print()
     '''
 	Determines if num is contained in the specified row (horizontal) of the board
     If num is already in the specified row, return False. Otherwise, return True
