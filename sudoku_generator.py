@@ -34,24 +34,7 @@ class SudokuGenerator:
 	Return: list[list]
     '''
     def get_board(self):
-        board=[]
-        row=[]
-        for i in range(self.row_length):
-            while len(row)<self.row_length:
-                num2add=random.randint(1,self.row_length)
-                if num2add not in row:
-                    row.append(num2add)
-            board.append(row)
-            row=[]
-        while self.removed_cells>0:
-            randrow=random.randint(0,self.row_length-1)
-            randcol=random.randint(0,self.row_length-1)
-            if board[randrow][randcol]!=0:
-                board[randrow][randcol]=0
-            else:
-                continue
-            self.removed_cells-=1
-        return board
+        return self.board
     '''
 	Displays the board to the console
     This is not strictly required, but it may be useful for debugging purposes
@@ -253,6 +236,7 @@ def generate_sudoku(size, removed):
     sudoku.remove_cells()
     board = sudoku.get_board()
     return board
+
 
 
 
