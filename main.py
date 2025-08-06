@@ -170,13 +170,13 @@ def main():
 
             if game_state == "MENU":
                 if easy_button.is_clicked(event):
-                    create_new_game(DIFFICULTY_LEVELS["easy"])
+                    create_new_game("easy")
                     game_state = "PLAYING"
                 elif medium_button.is_clicked(event):
-                    create_new_game(DIFFICULTY_LEVELS["medium"])
+                    create_new_game("medium")
                     game_state = "PLAYING"
                 elif hard_button.is_clicked(event):
-                    create_new_game(DIFFICULTY_LEVELS["hard"])
+                    create_new_game("hard")
                     game_state = "PLAYING"
 
             elif game_state == "PLAYING":
