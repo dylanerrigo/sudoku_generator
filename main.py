@@ -109,7 +109,6 @@ def draw_grid():
 def redraw_window():
     screen.fill(WHITE)
     box_length = int(math.sqrt(ROWS))
-    lw = 3 if i % box_length == 0 else
     if game_state == "MENU":
         title = FONT.render("Select Difficulty", True, BLACK)
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 100))
