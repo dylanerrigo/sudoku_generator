@@ -1,13 +1,26 @@
 import pygame
+import math
 from cell import Cell
 from sudoku_generator import generate_sudoku, SudokuGenerator
 
 pygame.init()
 
-WIDTH, HEIGHT = 540, 600
-ROWS, COLS = 9, 9
-CELL_WIDTH = WIDTH // COLS
-CELL_HEIGHT = (HEIGHT - 60) // ROWS
+def create_new_game(difficulty):
+    global board, cells, sudoku_validator, selected_row, selected_col, ROWS, COLS, CELL_WIDTH, CELL_HEIGHT
+
+    size = DIFFICULTY_SETTINGS[difficulty]["size"]
+    removed = DIFFICULTY_SETTINGS[difficulty]["removed"]
+
+    ROWS, COLS = size, size
+    CELL_WIDTH = WIDTH // COLS
+    CELL_HEIGHT = (HEIGHT - 60) // ROWS
+
+    board = generate_sudoku(size, removed)
+    cells = [[Cell(board[r][c], r, c, screen) for c in range(COLS)] for r in range(ROWS)]
+
+    sudoku_validator = SudokuGenerator(removed, size)
+    sudoku_validator.fill_values()
+    selected_row, selected_col = None, None
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sudoku")
@@ -23,10 +36,10 @@ RED = (255, 0, 0)
 GREEN = (0, 180, 0)
 BLUE = (0, 0, 255)
 
-DIFFICULTY_LEVELS = {
-    "easy": 30,
-    "medium": 40,
-    "hard": 50
+DIFFICULTY_SETTINGS = {
+    "easy": {"size": 6, "removed": 10},
+    "medium": {"size": 9, "removed": 40},
+    "hard": {"size": 12, "removed": 70}
 }
 
 class Button:
@@ -55,9 +68,12 @@ button_width, button_height = 140, 50
 spacing = 20
 start_y = HEIGHT // 2 - button_height // 2
 
-easy_button = Button(WIDTH // 2 - button_width - spacing, start_y, button_width, button_height, "Easy", color=GREEN)
-medium_button = Button(WIDTH // 2 - button_width // 2, start_y, button_width, button_height, "Medium", color=BLUE)
-hard_button = Button(WIDTH // 2 + spacing + button_width // 2, start_y, button_width, button_height, "Hard", color=RED)
+total_width = button_width * 3 + spacing * 2
+start_x = (WIDTH - total_width) // 2
+
+easy_button = Button(start_x, start_y, button_width, button_height, "Easy", color=GREEN)
+medium_button = Button(start_x + button_width + spacing, start_y, button_width, button_height, "Medium", color=BLUE)
+hard_button = Button(start_x + 2 * (button_width + spacing), start_y, button_width, button_height, "Hard", color=RED)
 
 reset_button = Button(10, HEIGHT - 50, 100, 40, "Reset")
 restart_button = Button(WIDTH // 2 - 50, HEIGHT - 50, 100, 40, "Restart")
@@ -84,14 +100,16 @@ def create_new_game(difficulty_removed):
     selected_row, selected_col = None, None
 
 def draw_grid():
+    box_length = int(math.sqrt(ROWS))
     for i in range(ROWS + 1):
-        lw = 3 if i % 3 == 0 else 1
+        lw = 3 if i % box_length == 0 else 1
         pygame.draw.line(screen, BLACK, (0, i * CELL_HEIGHT), (WIDTH, i * CELL_HEIGHT), lw)
         pygame.draw.line(screen, BLACK, (i * CELL_WIDTH, 0), (i * CELL_WIDTH, ROWS * CELL_HEIGHT), lw)
 
 def redraw_window():
     screen.fill(WHITE)
-
+    box_length = int(math.sqrt(ROWS))
+    lw = 3 if i % box_length == 0 else
     if game_state == "MENU":
         title = FONT.render("Select Difficulty", True, BLACK)
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 100))
