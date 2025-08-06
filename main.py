@@ -20,6 +20,7 @@ BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
 LIGHT_BLUE = (173, 216, 230)
+RED = (255, 0, 0)
 
 pygame.init()
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -54,23 +55,6 @@ def draw_menu():
     return easy_btn, medium_btn, hard_btn
 
 
-def select_difficulty():
-    while True:
-        easy_btn, medium_btn, hard_btn = draw_menu()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if easy_btn.collidepoint(event.pos):
-                    return EASY_CELLS
-                elif medium_btn.collidepoint(event.pos):
-                    return MEDIUM_CELLS
-                elif hard_btn.collidepoint(event.pos):
-                    return HARD_CELLS
-        clock.tick(FPS)
-
-
 def draw_grid():
     for i in range(GRID_SIZE + 1):
         line_width = 3 if i % 3 == 0 else 1
@@ -88,24 +72,129 @@ def draw_board(cells):
     for row in cells:
         for cell in row:
             cell.draw(CELL_SIZE, CELL_SIZE)
-    pygame.display.update()
+
+
+class Button:
+    def __init__(self, rect, text, bg_color=LIGHT_BLUE, text_color=BLACK):
+        self.rect = pygame.Rect(rect)
+        self.text = text
+        self.bg_color = bg_color
+        self.text_color = text_color
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.bg_color, self.rect)
+        draw_text(self.text, 24, self.text_color, self.rect.center)
+
+    def is_clicked(self, pos):
+        return self.rect.collidepoint(pos)
 
 
 def main():
-    removed_cells = select_difficulty()
-    board = generate_sudoku(9, removed_cells)
-    cells = create_cells(board)
+    game_state = "MENU"
+    difficulty_cells = 0
+    original_board = None
+    cells = None
+
+    # Buttons for menu
+    easy_btn, medium_btn, hard_btn = None, None, None
+
+    # Buttons for gameplay
+    reset_button = Button((50, WINDOW_WIDTH + 20, 120, 40), "Reset")
+    restart_button = Button((210, WINDOW_WIDTH + 20, 120, 40), "Restart")
+    exit_button = Button((370, WINDOW_WIDTH + 20, 120, 40), "Exit")
+
+    selected_cell = None
 
     running = True
     while running:
-        draw_board(cells)
+        clock.tick(FPS)
+
+        if game_state == "MENU":
+            easy_btn, medium_btn, hard_btn = draw_menu()
+        elif game_state == "PLAYING":
+            draw_board(cells)
+            reset_button.draw(screen)
+            restart_button.draw(screen)
+            exit_button.draw(screen)
+            pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        clock.tick(FPS)
+            if game_state == "MENU":
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if easy_btn and easy_btn.collidepoint(event.pos):
+                        difficulty_cells = EASY_CELLS
+                        original_board = generate_sudoku(GRID_SIZE, difficulty_cells)
+                        cells = create_cells(original_board)
+                        game_state = "PLAYING"
+                    elif medium_btn and medium_btn.collidepoint(event.pos):
+                        difficulty_cells = MEDIUM_CELLS
+                        original_board = generate_sudoku(GRID_SIZE, difficulty_cells)
+                        cells = create_cells(original_board)
+                        game_state = "PLAYING"
+                    elif hard_btn and hard_btn.collidepoint(event.pos):
+                        difficulty_cells = HARD_CELLS
+                        original_board = generate_sudoku(GRID_SIZE, difficulty_cells)
+                        cells = create_cells(original_board)
+                        game_state = "PLAYING"
+
+            elif game_state == "PLAYING":
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = event.pos
+                    # Check buttons first
+                    if reset_button.is_clicked(pos):
+                        # Reset player edits to original puzzle
+                        for r in range(GRID_SIZE):
+                            for c in range(GRID_SIZE):
+                                cells[r][c].value = original_board[r][c]
+                                cells[r][c].sketched_value = 0
+                        selected_cell = None
+
+                    elif restart_button.is_clicked(pos):
+                        # Restart: generate new puzzle with same difficulty
+                        original_board = generate_sudoku(GRID_SIZE, difficulty_cells)
+                        cells = create_cells(original_board)
+                        selected_cell = None
+
+                    elif exit_button.is_clicked(pos):
+                        # Exit to menu
+                        game_state = "MENU"
+                        selected_cell = None
+
+                    else:
+                        # Check if clicked inside grid
+                        x, y = pos
+                        if x < WINDOW_WIDTH and y < WINDOW_WIDTH:  # grid is square
+                            col = x // CELL_SIZE
+                            row = y // CELL_SIZE
+                            # Select this cell
+                            selected_cell = (row, col)
+                            # Deselect all others first
+                            for r in range(GRID_SIZE):
+                                for c in range(GRID_SIZE):
+                                    cells[r][c].selected = False
+                            cells[row][col].selected = True
+
+                elif event.type == pygame.KEYDOWN and selected_cell:
+                    row, col = selected_cell
+                    cell = cells[row][col]
+
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3,
+                                     pygame.K_4, pygame.K_5, pygame.K_6,
+                                     pygame.K_7, pygame.K_8, pygame.K_9]:
+                        number = int(event.unicode)
+                        # Allow changes only if original board cell was empty
+                        if original_board[row][col] == 0:
+                            cell.set_cell_value(number)
+
+                    elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                        if original_board[row][col] == 0:
+                            cell.clear()
 
     pygame.quit()
+    sys.exit()
 
 
 if __name__ == "__main__":
