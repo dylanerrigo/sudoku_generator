@@ -75,7 +75,7 @@ def draw_board(cells):
 
 
 class Button:
-    def __init__(self, rect, text, bg_color=LIGHT_BLUE, text_color=BLUE):
+    def __init__(self, rect, text, bg_color=LIGHT_BLUE, text_color=BLACK):
         self.rect = pygame.Rect(rect)
         self.text = text
         self.bg_color = bg_color
