@@ -231,7 +231,7 @@ removed is the number of cells to clear (set to 0)
 Return: list[list] (a 2D Python list to represent the board)
 '''
 def generate_sudoku(size, removed):
-    sudoku = SudokuGenerator(size, removed)
+    sudoku = SudokuGenerator(removed, size)
     sudoku.fill_values()
     board = sudoku.get_board()
     sudoku.remove_cells()
