@@ -3,6 +3,7 @@ import math
 from cell import Cell
 from sudoku_generator import generate_sudoku, SudokuGenerator
 
+WIDTH, HEIGHT = 540, 600
 pygame.init()
 
 def create_new_game(difficulty):
@@ -88,16 +89,6 @@ cells = []
 board = []
 sudoku_validator = None
 removed_cells = 40
-
-def create_new_game(difficulty_removed):
-    global board, cells, sudoku_validator, selected_row, selected_col, removed_cells
-    removed_cells = difficulty_removed
-    board = generate_sudoku(9, removed_cells)
-    cells = [[Cell(board[r][c], r, c, screen) for c in range(COLS)] for r in range(ROWS)]
-
-    sudoku_validator = SudokuGenerator(removed_cells, 9)
-    sudoku_validator.fill_values()
-    selected_row, selected_col = None, None
 
 def draw_grid():
     box_length = int(math.sqrt(ROWS))
