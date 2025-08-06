@@ -3,7 +3,7 @@ import sys
 from sudoku_generator import generate_sudoku
 from cell import Cell
 
-# Constants
+
 WINDOW_WIDTH, WINDOW_HEIGHT = 540, 600
 GRID_SIZE = 9
 CELL_SIZE = WINDOW_WIDTH // GRID_SIZE
@@ -14,7 +14,7 @@ EASY_CELLS = 30
 MEDIUM_CELLS = 40
 HARD_CELLS = 50
 
-# Colors
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
@@ -95,10 +95,10 @@ def main():
     original_board = None
     cells = None
 
-    # Buttons for menu
+
     easy_btn, medium_btn, hard_btn = None, None, None
 
-    # Buttons for gameplay
+
     reset_button = Button((50, WINDOW_WIDTH + 20, 120, 40), "Reset")
     restart_button = Button((210, WINDOW_WIDTH + 20, 120, 40), "Restart")
     exit_button = Button((370, WINDOW_WIDTH + 20, 120, 40), "Exit")
@@ -143,9 +143,9 @@ def main():
             elif game_state == "PLAYING":
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = event.pos
-                    # Check buttons first
+
                     if reset_button.is_clicked(pos):
-                        # Reset player edits to original puzzle
+
                         for r in range(GRID_SIZE):
                             for c in range(GRID_SIZE):
                                 cells[r][c].value = original_board[r][c]
@@ -153,25 +153,25 @@ def main():
                         selected_cell = None
 
                     elif restart_button.is_clicked(pos):
-                        # Restart: generate new puzzle with same difficulty
+
                         original_board = generate_sudoku(GRID_SIZE, difficulty_cells)
                         cells = create_cells(original_board)
                         selected_cell = None
 
                     elif exit_button.is_clicked(pos):
-                        # Exit to menu
+
                         game_state = "MENU"
                         selected_cell = None
 
                     else:
-                        # Check if clicked inside grid
+
                         x, y = pos
-                        if x < WINDOW_WIDTH and y < WINDOW_WIDTH:  # grid is square
+                        if x < WINDOW_WIDTH and y < WINDOW_WIDTH:
                             col = x // CELL_SIZE
                             row = y // CELL_SIZE
-                            # Select this cell
+
                             selected_cell = (row, col)
-                            # Deselect all others first
+
                             for r in range(GRID_SIZE):
                                 for c in range(GRID_SIZE):
                                     cells[r][c].selected = False
@@ -185,7 +185,7 @@ def main():
                                      pygame.K_4, pygame.K_5, pygame.K_6,
                                      pygame.K_7, pygame.K_8, pygame.K_9]:
                         number = int(event.unicode)
-                        # Allow changes only if original board cell was empty
+
                         if original_board[row][col] == 0:
                             cell.set_cell_value(number)
 
