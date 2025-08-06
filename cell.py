@@ -31,5 +31,6 @@ class Cell:
             text_rect = text.get_rect(center=(x_pos + width / 2, y_pos + height / 2))
             self.screen.blit(text, text_rect)
         elif self.sketched_value != 0:
-            text = font.render(str(self.sketched_value), True, (128, 128, 128))
-            self.screen.blit(text, (x_pos + 5, y_pos + 5))
+            text = font.render(str(self.sketched_value), True, (0, 0, 255))
+            text_rect = text.get_rect(center=(x_pos + width / 2, y_pos + height / 2))
+            self.screen.blit(text, text_rect)
