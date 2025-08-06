@@ -12,11 +12,6 @@ class Cell:
     self.value = value
   def set_sketched_value(self, value):
     self.sketched_value = value
-
-  def clear(self):
-      self.value = 0
-      self.sketched_value = 0
-
   def draw(self, width, height):
         x_pos = self.col * width
         y_pos = self.row * height
