@@ -187,7 +187,7 @@ def main():
                         number = int(event.unicode)
 
                         if original_board[row][col] == 0:
-                            cell.set_cell_value(number)
+                            cell.set_sketched_value(number)
                         pygame.display.update()
 
                     elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
